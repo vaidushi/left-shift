@@ -7,12 +7,12 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
 async function getChangedFiles() {
   const output = execSync(
-    "git diff --name-only origin/main...HEAD"
+    "git diff --name-only HEAD^ HEAD"
   ).toString();
 
   return output
-    .split("\n")
-    .filter(file => file.endsWith(".js"));
+  .split("\n")
+  .filter(file => file.endsWith(".js"));
 }
 
 async function secureFile(filePath) {
