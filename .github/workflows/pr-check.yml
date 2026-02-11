@@ -13,11 +13,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout
+      # 1️⃣ Checkout the actual PR branch (not detached HEAD)
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref }}
 
       # 2️⃣ Setup Node
       - name: Setup Node.js
@@ -34,26 +35,30 @@ jobs:
         run: |
           timeout 5s node index.js || true
 
-      # 5️⃣ Fetch main branch (IMPORTANT for diff)
-      - name: Fetch origin
+      # 5️⃣ Fetch main branch (needed for diff comparison)
+      - name: Fetch main branch
         run: git fetch origin main:main
 
-      # 6️⃣ Gemini Security Agent
+      # 6️⃣ Run Gemini Security Agent
       - name: Run Gemini Security Agent
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node scripts/ai-security-agent.js
 
-      # 7️⃣ Commit AI Fixes
+      # 7️⃣ Commit AI Fixes (if any)
       - name: Commit AI Fixes
         run: |
           git config user.name "Gemini AI Agent"
           git config user.email "ai-agent@hackathon.com"
           git add .
-          git diff --cached --quiet || git commit -m "AI: Security fixes applied"
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m "AI: Security fixes applied"
+            git push origin ${{ github.head_ref }}
+          else
+            echo "No changes to commit."
+          fi
 
-      # 8️⃣ Build Verification
+      # 8️⃣ Final Build Verification (Fail if broken)
       - name: Verify Application After AI Fix
         run: |
           npm install
