@@ -16,6 +16,8 @@ jobs:
       # 1️⃣ Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
+         with:
+          fetch-depth: 0
 
       # 2️⃣ Setup Node
       - name: Setup Node.js
@@ -34,7 +36,7 @@ jobs:
 
       # 5️⃣ Fetch main branch (IMPORTANT for diff)
       - name: Fetch origin
-        run: git fetch origin main
+        run: git fetch origin main:main
 
       # 6️⃣ Gemini Security Agent
       - name: Run Gemini Security Agent
