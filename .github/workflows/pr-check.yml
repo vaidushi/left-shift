@@ -1,9 +1,18 @@
+name: PR Shift-Left Security Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
 jobs:
   security-pipeline:
     runs-on: ubuntu-latest
 
     steps:
-
       # 1️⃣ Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,8 +51,8 @@ jobs:
           git diff --cached --quiet || git commit -m "AI: Security fixes applied"
           git push
 
-      # 8️⃣ ✅ Build Verification (ADD THIS HERE)
+      # 8️⃣ Build Verification
       - name: Verify Application After AI Fix
         run: |
           npm install
-          timeout 5s node index.js || true
+          timeout 5s node index.js
