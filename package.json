@@ -8,8 +8,9 @@
     "lint": "node index.js",
     "build": "node index.js",
     "secret-scan": "node scripts/secret-scan.js",
-    "ai-secret-fix": "node scripts/ai-security-agency.js",
-    "ai-injection-fix": "node scripts/ai-injection-fix.js"
+    "ai-secret-fix": "node scripts/ai-secret-fix.js",
+    "ai-injection-fix": "node scripts/ai-injection-fix.js",
+    "ai-dependency-risk": "node scripts/ai-dependency-risk.js"
   },
   "keywords": [],
   "author": "",
