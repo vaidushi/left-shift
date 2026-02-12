@@ -8,7 +8,7 @@
     "lint": "node index.js",
     "build": "node index.js",
     "secret-scan": "node scripts/secret-scan.js",
-    "ai-secret-fix": "node scripts/ai-secret-fix.js",
+    "ai-secret-fix": "node scripts/ai-security-agency.js",
     "ai-injection-fix": "node scripts/ai-injection-fix.js"
   },
   "keywords": [],
@@ -18,7 +18,8 @@
   "dependencies": {
     "axios": "^1.13.5",
     "dotenv": "^17.2.4",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "lodash": "^4.17.19"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
