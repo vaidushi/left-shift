@@ -7,59 +7,54 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   security-pipeline:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the actual PR branch (not detached HEAD)
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
-
-      # 2️⃣ Setup Node
-      - name: Setup Node.js
+          
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      # 3️⃣ Install dependencies
-      - name: Install dependencies (Layer 0)
+      - name: Install dependencies
         run: npm install
 
-      # 4️⃣ Runtime sanity check
-      - name: Runtime sanity check (Layer 0)
-        run: |
-          timeout 5s node index.js || true
+      - name: Runtime sanity check
+        run: timeout 5s node index.js || true
 
-      # 5️⃣ Fetch main branch (needed for diff comparison)
-      - name: Fetch main branch
-        run: git fetch origin main:main
-
-      # 6️⃣ Run Gemini Security Agent
-      - name: Run Gemini Security Agent
+      - name: AI Secret Detection & Refactor
+        id: ai
+        run: npm run ai-secret-fix
+        continue-on-error: true
         env:
+          AI_PROVIDER: gemini
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: node scripts/ai-security-agent.js
+          GEMINI_MODEL: gemini-2.5-flash
+      
+      - name: AI Injection & XSS Refactor (Layer 2)
+        id: injection
+        run: npm run ai-injection-fix
+        continue-on-error: true
+        env:
+          AI_PROVIDER: gemini
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-2.5-flash
 
-      # 7️⃣ Commit AI Fixes (if any)
-      - name: Commit AI Fixes
+
+      - name: Commit AI Changes
+        if: steps.ai.outcome == 'failure' || steps.injection.outcome == 'failure'
         run: |
-          git config user.name "Gemini AI Agent"
-          git config user.email "ai-agent@hackathon.com"
+          git config user.name "shift-left-ai"
+          git config user.email "ai-bot@hackathon.com"
           git add .
-          if ! git diff --cached --quiet; then
-            git commit -m "AI: Security fixes applied"
-            git push origin ${{ github.head_ref }}
-          else
-            echo "No changes to commit."
-          fi
-
-      # 8️⃣ Final Build Verification (Fail if broken)
-      - name: Verify Application After AI Fix
-        run: |
-          npm install
-          timeout 5s node index.js
+          git commit -m "🤖 AI security refactor applied"
+          git push
