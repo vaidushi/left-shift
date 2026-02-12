@@ -1,15 +1,26 @@
 {
-  "name": "projecthack",
+  "name": "shift-left-security-demo",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "lint": "node index.js",
+    "build": "node index.js",
+    "secret-scan": "node scripts/secret-scan.js",
+    "ai-secret-fix": "node scripts/ai-secret-fix.js",
+    "ai-injection-fix": "node scripts/ai-injection-fix.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "type": "commonjs",
   "dependencies": {
-    "@google/generative-ai": "^0.24.1"
+    "axios": "^1.13.5",
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   }
 }
